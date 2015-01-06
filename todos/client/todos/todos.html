@@ -1,0 +1,23 @@
+<template name="todosPage">
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <div class="row header">
+        <div class="col-xs-9">
+          <h1 class="heading">{{currentUser.profile.name}}'s todos</h1>
+        </div>
+        <div class="col-xs-3"><a class="logout btn btn-default">Logout</a></div>
+      </div>
+      <div class="action-bar">
+        <a class="show-done-toggle action btn btn-xs btn-default">Done: Show</a>
+        <a class="done-to-bottom action btn btn-xs btn-default">Done to Bottom</a>
+        <span class="notice"></span>
+      </div>
+      <input type="text" placeholder="new todo" class="add-todo form-control"/>
+      <ul class="todos sortable hide-done">
+        {{#each todos}}
+          {{> todo}}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</template>

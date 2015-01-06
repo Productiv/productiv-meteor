@@ -1,0 +1,11 @@
+<template name="todo">
+  <li id="{{_id}}" data-index="{{index}}" class="{{isDone}}">
+    <span class="remove">
+      <i class="fa fa-remove fa-1"></i>
+    </span>
+    <span class="check-container">
+      <input type="checkbox" checked="{{isDone}}" class="check"/>
+    </span>
+    <span class="title"> {{title}} </span>
+  </li>
+</template>
