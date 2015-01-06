@@ -8,7 +8,7 @@ setDoneStatus = function() {
 
 toggleDoneHidden = function() {
   var isHidden = Session.get('isDoneHidden');
-  Session.set('isDoneHidden', !isHidden);
+  Session.setPersistent('isDoneHidden', !isHidden);
 };
 
 Template.todosPage.rendered = function () {
@@ -26,15 +26,14 @@ Template.todosPage.helpers({
 
   todos: function () {
     var uid = Meteor.userId();
-    return userTodosByIndex(uid);
+    var sortBy = Session.get('sortBy');
+    var sortOrder = Session.get('sortOrder');
 
-    // var sortBy = Session.get('sortBy');
-    // var sortOrder = Session.get('sortOrder');
-    // if(sortBy) {
-    //   return userTodosByIndexBy(uid, sortBy, sortOrder);
-    // } else {
-    //   return userTodosByIndex(uid);
-    // }
+    if(sortBy) {
+      return userTodosByIndexBy(uid, sortBy, sortOrder);
+    } else {
+      return userTodosByIndex(uid);
+    }
   },
 
   notice: function() {
@@ -84,11 +83,11 @@ Template.todosPage.events({
 
   'click .done-to-bottom': function(e) {
     if(Session.get('sortBy') === 'isDone') {
-      Session.set('sortBy', '');
-      Session.set('sortOrder', '');
+      Session.setPersistent('sortBy', '');
+      Session.setPersistent('sortOrder', '');
     } else {
-      Session.set('sortBy', 'isDone');
-      Session.set('sortOrder', 'asc');
+      Session.setPersistent('sortBy', 'isDone');
+      Session.setPersistent('sortOrder', 'asc');
     }
   },
 
