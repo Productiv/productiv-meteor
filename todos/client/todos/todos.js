@@ -50,6 +50,10 @@ Template.todosPage.helpers({
 
   doneToBottom: function() {
     return Session.get('sortBy') === 'isDone' ? 'active' : '';
+  },
+
+  doneToBottomHidden: function() {
+    return Session.get('isDoneHidden') ? 'hidden' : '';
   }
 
 });
