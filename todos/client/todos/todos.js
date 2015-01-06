@@ -1,27 +1,4 @@
 
-showUndo = function(message, action, undoAction) {
-  Session.set('notice', message);
-  $('.notice').show();
-
-  // Could cause race conditions, etc.
-  setTimeout(function() { $('.notice').fadeOut(2000, function() {
-    $(this).hide().attr('style', '');
-  }); }, 3000);
-  window.onbeforeunload = action;
-  window.undo_timeout = setTimeout(function() {
-    action();
-    window.onbeforeunload = null;
-  }, 5000);
-
-  $('.undo').click(function(e) {
-    e.preventDefault();
-    window.onbeforeunload = null
-    $('.notice').stop().hide();
-    clearTimeout(window.undo_timeout);
-    undoAction();
-  });
-};
-
 setDoneStatus = function() {
   if(Session.get('isDoneHidden'))
     Session.set('doneStatus', 'Hidden');
@@ -29,10 +6,26 @@ setDoneStatus = function() {
     Session.set('doneStatus', 'Showing');
 };
 
+toggleDoneHidden = function() {
+  var isHidden = Session.get('isDoneHidden');
+  Session.set('isDoneHidden', !isHidden);
+};
+
+Template.todosPage.rendered = function () {
+  setDoneStatus();
+};
+
 Template.todosPage.helpers({
 
   todos: function () {
-    return userTodosByNewest(Meteor.userId());
+    var uid = Meteor.userId();
+    var sortBy = Session.get('sortBy');
+    var sortOrder = Session.get('sortOrder');
+    if(sortBy) {
+      return userTodosByNewestBy(uid, sortBy, sortOrder);
+    } else {
+      return userTodosByNewest(uid);
+    }
   },
 
   notice: function() {
@@ -45,6 +38,10 @@ Template.todosPage.helpers({
 
   hideDone: function() {
     return Session.get('isDoneHidden') ? 'hide-done' : '';
+  },
+
+  doneToBottom: function() {
+    return Session.get('sortBy') === 'isDone' ? 'active' : '';
   }
 
 });
@@ -62,33 +59,6 @@ Template.todosPage.events({
     $(e.target).val();
   },
 
-  'change .check': function(e) {
-    e.preventDefault();
-
-    var checkbox = e.target;
-    var $todo = $(checkbox).parents('.todo');
-    var isDone = checkbox.checked;
-    var _id = $todo.attr('id');
-
-    if($todo.parents('.todos').hasClass('hide-done')) {
-      $todo.fadeOut('300', function(e) {
-        $(this).toggleClass('done').attr('style', '');
-      });
-    } else $todo.toggleClass('done');
-
-    // updateTodo(id, { isDone: isDone });
-    Todos.update({ _id: _id }, { $set: { isDone: isDone } });
-
-    showUndo('Todo completed.', function() {
-      // do nothing
-    }, function() {
-      // updateTodo(id, { isDone: !isDone });
-      Todos.update({ _id: _id }, { $set: { isDone: !isDone } });
-    });
-
-    $todo.children('.title-input').focus();
-  },
-
   'mouseenter .show-done-toggle': function(e) {
     if(Session.get('isDoneHidden'))
       Session.set('doneStatus', 'Show');
@@ -99,9 +69,23 @@ Template.todosPage.events({
   'mouseleave .show-done-toggle': setDoneStatus,
 
   'click .show-done-toggle': function(e) {
-    var isHidden = Session.get('isDoneHidden');
-    Session.set('isDoneHidden', !isHidden);
+    toggleDoneHidden();
     setDoneStatus();
+  },
+
+  'click .done-to-bottom': function(e) {
+    if(Session.get('sortBy') === 'isDone') {
+      Session.set('sortBy', '');
+      Session.set('sortOrder', '');
+    } else {
+      Session.set('sortBy', 'isDone');
+      Session.set('sortOrder', 'asc');
+    }
+  },
+
+  'click .logout': function(e) {
+    Meteor.logout();
+    Router.go('accounts.login');
   }
 
 });

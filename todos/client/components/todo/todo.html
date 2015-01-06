@@ -6,6 +6,14 @@
     <span class="check-container">
       <input type="checkbox" checked="{{isDone}}" class="check"/>
     </span>
-    <span class="title"> {{title}} </span>
+    {{#if editing}}
+      {{> todoTitleInput}}
+    {{else}}
+      <span class="title"> {{title}} </span>
+    {{/if}}
   </li>
+</template>
+
+<template name="todoTitleInput">
+  <input class="title-input" type="text"/>
 </template>

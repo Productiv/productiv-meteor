@@ -32,6 +32,12 @@ todo = function(_id) {
   return Todos.findOne({ _id: _id });
 };
 
+todos = function(selector, options) {
+  selector = selector || {};
+  options  = options  || {};
+  return Todos.find(selector, options);
+};
+
 allTodos = function() {
   return Todos.find();
 };
@@ -52,11 +58,20 @@ doneUserTodosByNewest = function(uid) {
   return Todos.find({ uid: uid, isDone: true }, { sort: { createdAt: 'desc' } });
 };
 
-userTodosByNewestByDone = function(uid) {
+userTodosByNewestByNotDone = function(uid) {
   return Todos.find({ uid: uid, isDone: true }, {
     sort: [
-      ['createdAt', 'desc'],
-      ['isDone', 'desc']
+      ['isDone', 'desc'],
+      ['createdAt', 'desc']
+    ]
+  });
+};
+
+userTodosByNewestBy = function(uid, sortBy, orderBy) {
+  return Todos.find({ uid: Meteor.userId() }, {
+    sort: [
+      [sortBy, orderBy],
+      ['createdAt', 'desc']
     ]
   });
 };
