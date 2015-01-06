@@ -71,7 +71,7 @@ Template.todo.events({
 
       showUndo('Task deleted.', function() {
         removeTodo(id);
-        updateIndexOfTodos();
+        // updateIndexOfTodos();
       }, function() {
         $todo.show();
       });
@@ -109,7 +109,7 @@ Template.todo.events({
 
     showUndo('Task deleted.', function() {
       removeTodo(id);
-      updateIndexOfTodos();
+      // updateIndexOfTodos();
     }, function() {
       $todo.show();
     });

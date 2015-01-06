@@ -1,3 +1,4 @@
+
 Todos = new Mongo.Collection('todos');
 
 insertTodo = function(todo) {
