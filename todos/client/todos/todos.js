@@ -64,7 +64,7 @@ Template.todosPage.events({
 
     Meteor.call('insertTodoAtFirstIndex', { title: title, uid: uid });
 
-    $(e.target).val();
+    $(e.target).val('');
   },
 
   'mouseenter .show-done-toggle': function(e) {
