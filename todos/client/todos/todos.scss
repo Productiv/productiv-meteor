@@ -36,6 +36,7 @@
 .todo {
   padding-left: 0;
   margin-left: 0;
+  width: 100%;
 
   .title:hover,
   .remove:hover {
@@ -56,18 +57,18 @@
 
   .check-container {
     margin-left: 10px;
-  }
 
-  .check {
-    position: relative;
-    vertical-align: middle;
-    bottom: 3px;
+    .check {
+      position: relative;
+      vertical-align: middle;
+      bottom: 3px;
+    }
   }
 
   .title,
   .title-input {
     display: inline-block;
-    width: 87.5%;
+    width: 85%;
     margin-left: 10px;
   }
 }

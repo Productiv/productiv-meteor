@@ -3,7 +3,7 @@ Todos = new Mongo.Collection('todos');
 insertTodo = function(todo) {
   todo.createdAt = todo.createdAt || (new Date()).getTime();
   todo.isDone    = todo.isDone    || false;
-  todo.index     = todo.index     || Infinity;
+  if(todo.index === undefined || todo.index === null) todo.index = Infinity;
   Todos.insert(todo, function() {
     console.log('done!');
   });
@@ -20,8 +20,8 @@ Meteor.methods({
   }
 })
 
-updateTodo = function(_id, newTodo) {
-  Todos.update({ _id: _id }, { $set: newTodo });
+updateTodo = function(_id, newValues) {
+  Todos.update({ _id: _id }, { $set: newValues });
 };
 
 removeTodo = function(_id) {
