@@ -10,26 +10,28 @@ insertTodo = function(todo) {
 };
 
 Meteor.methods({
+
   insertTodoAtFirstIndex: function(todo) {
     console.log('updating other todos...')
-    Todos.update({}, { $inc: { index: 1 } }, function() {
+    Todos.update({}, { $inc: { index: 1 } }, { multi: true }, function() {
       console.log('done! inserting...')
       todo.index = 0;
       insertTodo(todo);
     });
   }
+
 })
 
 updateTodo = function(_id, newValues) {
-  Todos.update({ _id: _id }, { $set: newValues });
+  Todos.update(_id, { $set: newValues });
 };
 
 removeTodo = function(_id) {
-  Todos.remove({ _id: _id });
+  Todos.remove(_id);
 };
 
 todo = function(_id) {
-  return Todos.findOne({ _id: _id });
+  return Todos.findOne(_id);
 };
 
 todos = function(selector, options) {
@@ -48,6 +50,28 @@ userTodos = function(uid) {
 
 doneUserTodos = function(uid) {
   return Todos.find({ uid: uid, isDone: true });
+};
+
+userTodosByIndex = function(uid) {
+  return Todos.find({ uid: uid }, { sort: { index: 'asc' } });
+};
+
+userTodosByIndexByNotDone = function(uid) {
+  return Todos.find({ uid: uid, isDone: true }, {
+    sort: [
+      ['isDone', 'desc'],
+      ['index', 'asc']
+    ]
+  });
+};
+
+userTodosByIndexBy = function(uid, sortBy, orderBy) {
+  return Todos.find({ uid: Meteor.userId() }, {
+    sort: [
+      [sortBy, orderBy],
+      ['index', 'asc']
+    ]
+  });
 };
 
 userTodosByNewest = function(uid) {

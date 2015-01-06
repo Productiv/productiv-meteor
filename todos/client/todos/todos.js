@@ -13,19 +13,28 @@ toggleDoneHidden = function() {
 
 Template.todosPage.rendered = function () {
   setDoneStatus();
+  var $todos = document.getElementsByClassName('sortable')[0];
+  var sortable = new Sortable($todos, {
+    ghostClass: "sortable-placeholder",  // Class name for the drop placeholder
+    onSort: function (e) { // Called by any change (add / update / remove)
+      updateIndexOfTodos();
+    }
+  });
 };
 
 Template.todosPage.helpers({
 
   todos: function () {
     var uid = Meteor.userId();
-    var sortBy = Session.get('sortBy');
-    var sortOrder = Session.get('sortOrder');
-    if(sortBy) {
-      return userTodosByNewestBy(uid, sortBy, sortOrder);
-    } else {
-      return userTodosByNewest(uid);
-    }
+    return userTodosByIndex(uid);
+
+    // var sortBy = Session.get('sortBy');
+    // var sortOrder = Session.get('sortOrder');
+    // if(sortBy) {
+    //   return userTodosByIndexBy(uid, sortBy, sortOrder);
+    // } else {
+    //   return userTodosByIndex(uid);
+    // }
   },
 
   notice: function() {

@@ -2,7 +2,7 @@
 Template.todoTitleInput.rendered = function() {
   var $input = $('.title-input');
   var $todo = $input.parents('.todo');
-  $input.focus().val($todo.data('title'));
+  $input.val('').focus().val($todo.data('title'));
 };
 
 Template.todo.helpers({
@@ -13,6 +13,10 @@ Template.todo.helpers({
 
   editing: function() {
     return Session.get('todo-' + this._id) === 'editing';
+  },
+
+  draggable: function() {
+    return Session.get('todo-' + this._id) !== 'editing'
   }
 
 });
@@ -47,53 +51,68 @@ Template.todo.events({
   },
 
   'click .title': function(e) {
-    var title = $(e.target).html();
-    var $todo = $(e.target).parents('.todo');
+    $title = $(e.target);
+    var title = $title.html();
+    var $todo = $title.parents('.todo');
     $todo.data('title', title);
     Session.set('todo-' + $todo.attr('id'), 'editing');
     $todo.attr('draggable', false);
   },
 
   'keyup .title-input': function(e) {
-    // Press Enter
+    // Press Enter and Title Empty
     if(e.which === 13 && $(e.target).val() === '') {
       e.preventDefault();
 
       var $todo = $(e.target).parents('.todo');
+      var id = this._id;
 
       $todo.fadeOut('300');
 
       showUndo('Task deleted.', function() {
-        removeTodo($todo.attr('id'));
-        $todo.remove();
+        removeTodo(id);
+        updateIndexOfTodos();
       }, function() {
         $todo.show();
       });
-    }
-    else if(e.which === 13) {
+    } else if(e.which === 13) { // Press Enter
       e.preventDefault();
       var title = $(e.target).val();
       var $todo = $(e.target).parents('.todo');
-      var id = $todo.attr('id');
+      var id = this._id;
       $todo.attr('draggable', true);
       updateTodo(id, { title: title });
       Session.set('todo-' + id, '');
-    }
-
-    // Pres Esc
-    if(e.which === 27) {
+    } else if(e.which === 27) { // Press Esc
       var $todo = $(e.target).parents('.todo');
-      $todo.attr('draggable', true);
-      Session.set('todo-' + $todo.attr('id'), '');
+      Session.set('todo-' + this._id, '');
     }
   },
 
   'focusout .title-input': function(e) {
     e.preventDefault();
+    if(Session.get('todo-' + this._id) !== 'editing') return false;
     var $todo = $(e.target).parents('.todo');
     var title = $(e.target).val();
-    $todo.attr('draggable', true);
     updateTodo($todo.attr('id'), { title: title });
+    $todo.attr('draggable', true);
+    Session.set('todo-' + $todo.attr('id'), '');
+  },
+
+  'click .remove': function(e) {
+    e.preventDefault();
+
+    var $todo = $(e.target).parents('.todo');
+    var id = this._id;
+
+    $todo.fadeOut('300');
+
+    showUndo('Task deleted.', function() {
+      removeTodo(id);
+      updateIndexOfTodos();
+    }, function() {
+      $todo.show();
+    });
   }
 
 });
