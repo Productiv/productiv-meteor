@@ -1,0 +1,19 @@
+<template name="reminder">
+  <li id="{{_id}}" data-index="{{index}}" class="reminder {{done}}">
+    <span class="remove">
+      <i class="fa fa-remove fa-1"></i>
+    </span>
+    <span class="check-container">
+      <input type="checkbox" checked="{{isDone}}" class="check"/>
+    </span>
+    {{#if editing}}
+      {{> reminderTitleInput}}
+    {{else}}
+      <span class="title">{{title}}</span>
+    {{/if}}
+  </li>
+</template>
+
+<template name="reminderTitleInput">
+  <input class="title-input" type="text"/>
+</template>

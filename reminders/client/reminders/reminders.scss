@@ -1,0 +1,78 @@
+
+.action-bar {
+  margin-bottom: 10px;
+
+  .action:not(:first-child) {
+    margin-left: 10px;
+  }
+
+  .show-done-toggle {
+    width: 94px;
+  }
+}
+
+.header .btn {
+  margin-top: 24px;
+}
+
+.add-reminder {
+  margin-bottom: 10px;
+}
+
+.show-done-toggle[data-show="false"] + .done-to-bottom {
+  display: none;
+}
+
+.notice {
+  margin-left: 10px;
+}
+
+.reminders {
+  list-style-type: none;
+  padding-left: 0;
+  margin-left: 0;
+
+  &.hide-done .reminder.done {
+    display: none !important; /* hack, plz remove later */
+  }
+}
+
+.reminder {
+  padding-left: 0;
+  margin-left: 0;
+  width: 100%;
+
+  .title:hover,
+  .remove:hover {
+    cursor: pointer;
+  }
+
+  &.done .title {
+    text-decoration: line-through;
+  }
+
+  .remove {
+    color: #999;
+
+    &:hover {
+      color: inherit;
+    }
+  }
+
+  .check-container {
+    margin-left: 10px;
+
+    .check {
+      position: relative;
+      vertical-align: middle;
+      bottom: 3px;
+    }
+  }
+
+  .title,
+  .title-input {
+    display: inline-block;
+    width: 85%;
+    margin-left: 10px;
+  }
+}
