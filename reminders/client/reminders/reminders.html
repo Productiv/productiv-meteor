@@ -1,0 +1,30 @@
+<template name="remindersPage">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+      <div class="row header">
+        <div class="col-xs-9">
+          <h1 class="heading">{{currentUser.profile.name}}'s reminders</h1>
+        </div>
+        <div class="col-xs-3"><a class="logout btn btn-default">Logout</a></div>
+      </div>
+      <div class="action-bar">
+        <a class="show-done-toggle action btn btn-xs btn-default">
+          Done: {{doneStatus}}
+        </a>
+        <a class="done-to-bottom action btn btn-xs btn-default {{doneToBottom}}">
+          Done to Bottom
+        </a>
+        <span class="notice" hidden>
+          <span class="message"> {{notice}} </span>
+          <a class="undo" href="#"> Undo </a>
+        </span>
+      </div>
+      <input type="text" placeholder="new reminder" class="add-reminder form-control"/>
+      <ul class="reminders sortable {{hideDone}}">
+        {{#each reminders}}
+          {{> reminder}}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</template>
