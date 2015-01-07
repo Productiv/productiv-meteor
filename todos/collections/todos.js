@@ -13,30 +13,30 @@
 
 Todos = new Mongo.Collection('todos');
 
-Todos.helpers({
+// Todos.helpers({
 
-  owner: function() {
-    return findUser(this.ownerId);
-  },
+//   owner: function() {
+//     return findUser(this.ownerId);
+//   },
 
-  tags: function() {
-    return userTodoTags(this.ownerId, this._id);
-  },
+//   tags: function() {
+//     return userTodoTags(this.ownerId, this._id);
+//   },
 
-  removeTags: function(tags) {
-    //TODO: optionally accept tags or tagIds
-    tags.forEach(function(tag, index) {
-      tag.removeTodoIds(this._id);
-    });
-  },
+//   removeTags: function(tags) {
+//     //TODO: optionally accept tags or tagIds
+//     tags.forEach(function(tag, index) {
+//       tag.removeTodoIds(this._id);
+//     });
+//   },
 
-  addTags: function(tags) {
-    tags.forEach(function(tag, index) {
-      Tags.upsert(tag._id, { $set: tag, $push: { todoIds: this._id } });
-    });
-  }
+//   addTags: function(tags) {
+//     tags.forEach(function(tag, index) {
+//       Tags.upsert(tag._id, { $set: tag, $push: { todoIds: this._id } });
+//     });
+//   }
 
-});
+// });
 
 insertTodo = function(todo) {
   todo.createdAt = todo.createdAt || (new Date()).getTime();
