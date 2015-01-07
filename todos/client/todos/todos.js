@@ -16,8 +16,21 @@ Template.todosPage.rendered = function () {
   var $todos = document.getElementsByClassName('sortable')[0];
   var sortable = new Sortable($todos, {
     ghostClass: "sortable-placeholder",  // Class name for the drop placeholder
-    onSort: function (e) { // Called by any change (add / update / remove)
-      updateIndexOfTodos();
+    onEnd: function (e) {
+      el = e.item;
+      before = $(e.item).prev().get(0);
+      after = $(e.item).next().get(0);
+
+      var newIndex;
+      if(!before) {
+        newIndex = Blaze.getData(after).index - 1;
+      } else if(!after) {
+        newIndex = Blaze.getData(before).index + 1;
+      } else {
+        newIndex = (Blaze.getData(after).index + Blaze.getData(before).index)/2;
+      }
+
+      Todos.update({_id: Blaze.getData(el)._id}, {$set: {index: newIndex}});
     }
   });
 };
@@ -29,11 +42,9 @@ Template.todosPage.helpers({
     var sortBy = Session.get('sortBy');
     var sortOrder = Session.get('sortOrder');
 
-    if(sortBy) {
-      return userTodosByIndexBy(uid, sortBy, sortOrder);
-    } else {
-      return userTodosByIndex(uid);
-    }
+    if(sortBy) return userTodosByIndexBy(uid, sortBy, sortOrder);
+    else       return userTodosByIndex(uid);
+
   },
 
   notice: function() {
@@ -54,6 +65,10 @@ Template.todosPage.helpers({
 
   doneToBottomHidden: function() {
     return Session.get('isDoneHidden') ? 'hidden' : '';
+  },
+
+  noRender: function(){
+    return Session.get("noRender");
   }
 
 });

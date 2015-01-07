@@ -23,8 +23,8 @@ Meteor.methods({
 
 })
 
-updateTodo = function(_id, newValues) {
-  Todos.update(_id, { $set: newValues });
+updateTodo = function(_id, newValues, callback) {
+  Todos.update(_id, { $set: newValues }, callback);
 };
 
 removeTodo = function(_id) {
@@ -54,7 +54,7 @@ doneUserTodos = function(uid) {
 };
 
 userTodosByIndex = function(uid) {
-  return Todos.find({ uid: uid }, { sort: { index: 'asc' } });
+  return Todos.find({ uid: uid }, { sort: [[ 'index', 'asc' ]] });
 };
 
 userTodosByIndexByNotDone = function(uid) {
@@ -66,10 +66,10 @@ userTodosByIndexByNotDone = function(uid) {
   });
 };
 
-userTodosByIndexBy = function(uid, sortBy, orderBy) {
+userTodosByIndexBy = function(uid, sortBy, sortOrder) {
   return Todos.find({ uid: Meteor.userId() }, {
     sort: [
-      [sortBy, orderBy],
+      [sortBy, sortOrder],
       ['index', 'asc']
     ]
   });
