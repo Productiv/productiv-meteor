@@ -2,7 +2,7 @@
 Template.todoTitleInput.rendered = function() {
   var $input = $('.title-input');
   var $todo = $input.parents('.todo');
-  $input.val('').focus().val($todo.data('title'));
+  $input.val('').focus().val(decodeEntities($todo.data('title')));
 };
 
 Template.todo.helpers({
