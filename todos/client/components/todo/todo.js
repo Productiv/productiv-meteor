@@ -33,19 +33,20 @@ Template.todo.events({
 
     if($todo.parents('.todos').hasClass('hide-done')) {
       $todo.fadeOut('300', function(e) {
-        $(this).toggleClass('done').attr('style', '');
+        updateTodo(_id, { isDone: isDone }, function() {
+          $(this).attr('style', '');
+        });
       });
-    } else $todo.toggleClass('done');
+    } else updateTodo(_id, { isDone: isDone });
 
-    // updateTodo(id, { isDone: isDone });
-    Todos.update({ _id: _id }, { $set: { isDone: isDone } });
-
-    showUndo('Todo completed.', function() {
-      // do nothing
-    }, function() {
-      // updateTodo(id, { isDone: !isDone });
-      Todos.update({ _id: _id }, { $set: { isDone: !isDone } });
-    });
+    if(isDone && Session.get('isDoneHidden')) {
+      showUndo('Todo completed.', function() {
+        // do nothing
+      }, function() {
+        $todo.stop();
+        updateTodo(_id, { isDone: !isDone });
+      });
+    }
 
     $todo.children('.title-input').focus();
   },

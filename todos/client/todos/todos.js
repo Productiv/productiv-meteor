@@ -41,6 +41,8 @@ Template.todosPage.helpers({
     var uid = Meteor.userId();
     var sortBy = Session.get('sortBy');
     var sortOrder = Session.get('sortOrder');
+    var isDoneHidden = Session.get('isDoneHidden');
+    if(sortBy === 'isDone' && isDoneHidden) sortBy = false;
 
     if(sortBy) return userTodosByIndexBy(uid, sortBy, sortOrder);
     else       return userTodosByIndex(uid);
