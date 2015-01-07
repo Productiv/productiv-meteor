@@ -1,21 +1,31 @@
 
+/*******************************************************************************
+  Schema - Todo
+  {
+    _id       : String
+    ownerId   : String
+    title     : String
+    tagIds    : String[]
+    isDone    : Boolean
+    createdAt : Number
+    updatedAt : Number
+  }
+*******************************************************************************/
+
 Todos = new Mongo.Collection('todos');
 
 insertTodo = function(todo) {
   todo.createdAt = todo.createdAt || (new Date()).getTime();
   todo.isDone    = todo.isDone    || false;
-  if(todo.index === undefined || todo.index === null) todo.index = Infinity;
-  Todos.insert(todo, function() {
-    console.log('done!');
-  });
+  if(todo.index === undefined || todo.index === null) // index might be 0
+    todo.index = 0;
+  Todos.insert(todo);
 };
 
 Meteor.methods({
 
   insertTodoAtFirstIndex: function(todo) {
-    console.log('updating other todos...')
     Todos.update({}, { $inc: { index: 1 } }, { multi: true }, function() {
-      console.log('done! inserting...')
       todo.index = 0;
       insertTodo(todo);
     });
@@ -46,19 +56,19 @@ allTodos = function() {
 };
 
 userTodos = function(uid) {
-  return Todos.find({ uid: uid });
+  return Todos.find({ ownerId: uid });
 };
 
 doneUserTodos = function(uid) {
-  return Todos.find({ uid: uid, isDone: true });
+  return Todos.find({ ownerId: uid, isDone: true });
 };
 
 userTodosByIndex = function(uid) {
-  return Todos.find({ uid: uid }, { sort: [[ 'index', 'asc' ]] });
+  return Todos.find({ ownerId: uid }, { sort: [[ 'index', 'asc' ]] });
 };
 
 userTodosByIndexByNotDone = function(uid) {
-  return Todos.find({ uid: uid, isDone: true }, {
+  return Todos.find({ ownerId: uid, isDone: true }, {
     sort: [
       ['isDone', 'desc'],
       ['index', 'asc']
@@ -67,7 +77,7 @@ userTodosByIndexByNotDone = function(uid) {
 };
 
 userTodosByIndexBy = function(uid, sortBy, sortOrder) {
-  return Todos.find({ uid: Meteor.userId() }, {
+  return Todos.find({ ownerId: uid }, {
     sort: [
       [sortBy, sortOrder],
       ['index', 'asc']
@@ -76,15 +86,15 @@ userTodosByIndexBy = function(uid, sortBy, sortOrder) {
 };
 
 userTodosByNewest = function(uid) {
-  return Todos.find({ uid: uid }, { sort: { createdAt: 'desc' } });
+  return Todos.find({ ownerId: uid }, { sort: { createdAt: 'desc' } });
 };
 
 doneUserTodosByNewest = function(uid) {
-  return Todos.find({ uid: uid, isDone: true }, { sort: { createdAt: 'desc' } });
+  return Todos.find({ ownerId: uid, isDone: true }, { sort: { createdAt: 'desc' } });
 };
 
 userTodosByNewestByNotDone = function(uid) {
-  return Todos.find({ uid: uid, isDone: true }, {
+  return Todos.find({ ownerId: uid, isDone: true }, {
     sort: [
       ['isDone', 'desc'],
       ['createdAt', 'desc']
@@ -93,7 +103,7 @@ userTodosByNewestByNotDone = function(uid) {
 };
 
 userTodosByNewestBy = function(uid, sortBy, orderBy) {
-  return Todos.find({ uid: Meteor.userId() }, {
+  return Todos.find({ ownerId: uid }, {
     sort: [
       [sortBy, orderBy],
       ['createdAt', 'desc']

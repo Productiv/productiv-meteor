@@ -17,9 +17,36 @@ Template.todo.helpers({
 
   draggable: function() {
     return Session.get('todo-' + this._id) !== 'editing'
+  },
+
+  tags: function() {
+    return userItemTags(Meteor.userId(), this._id);
   }
 
 });
+
+function parseTags(str) {
+  var map = {
+    '~' : 'user',
+    '&' : 'todo',
+    '@' : 'reminder',
+    '#' : null
+  };
+
+  var tags = str.match(/([\@\~\&\#][\w\-]+)/g);
+  console.log('tags: ', tags);
+
+  return str;
+}
+
+function updateTitle(e, todoId) {
+  var title = parseTags($(e.target).val());
+  var $todo = $(e.target).parents('.todo');
+  var id = todoId;
+  $todo.attr('draggable', true);
+  updateTodo(id, { title: title });
+  Session.set('todo-' + id, '');
+}
 
 Template.todo.events({
 
@@ -52,11 +79,9 @@ Template.todo.events({
   },
 
   'click .title': function(e) {
-    $title = $(e.target);
-    var title = $title.html();
-    var $todo = $title.parents('.todo');
-    $todo.data('title', title);
-    Session.set('todo-' + $todo.attr('id'), 'editing');
+    var $todo = $(e.target).parents('.todo');
+    $todo.data('title', this.title);
+    Session.set('todo-' + this._id, 'editing');
     $todo.attr('draggable', false);
   },
 
@@ -78,12 +103,7 @@ Template.todo.events({
       });
     } else if(e.which === 13) { // Press Enter
       e.preventDefault();
-      var title = $(e.target).val();
-      var $todo = $(e.target).parents('.todo');
-      var id = this._id;
-      $todo.attr('draggable', true);
-      updateTodo(id, { title: title });
-      Session.set('todo-' + id, '');
+      updateTitle(e, this._id);
     } else if(e.which === 27) { // Press Esc
       var $todo = $(e.target).parents('.todo');
       Session.set('todo-' + this._id, '');
@@ -93,11 +113,7 @@ Template.todo.events({
   'focusout .title-input': function(e) {
     e.preventDefault();
     if(Session.get('todo-' + this._id) !== 'editing') return false;
-    var $todo = $(e.target).parents('.todo');
-    var title = $(e.target).val();
-    updateTodo($todo.attr('id'), { title: title });
-    $todo.attr('draggable', true);
-    Session.set('todo-' + $todo.attr('id'), '');
+    updateTitle(e, this._id);
   },
 
   'click .remove': function(e) {

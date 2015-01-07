@@ -9,7 +9,12 @@
     {{#if editing}}
       {{> todoTitleInput}}
     {{else}}
-      <span class="title">{{{title}}}</span>
+      <span class="title">
+        {{{title}}}
+        {{#each tags}}
+          {{> todoTag}}
+        {{/each}}
+      </span>
     {{/if}}
   </li>
 </template>

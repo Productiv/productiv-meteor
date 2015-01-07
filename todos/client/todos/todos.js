@@ -83,7 +83,7 @@ Template.todosPage.events({
     var title = $(e.target).val();
     var uid = Meteor.userId();
 
-    Meteor.call('insertTodoAtFirstIndex', { title: title, uid: uid });
+    Meteor.call('insertTodoAtFirstIndex', { title: title, ownerId: uid });
 
     $(e.target).val('');
   },

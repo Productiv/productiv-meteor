@@ -1,0 +1,30 @@
+<template name="listsPage">
+  <div class="row header">
+    <div class="col-xs-9">
+      <h1 class="heading">{{currentUser.profile.name}}'s todos</h1>
+    </div>
+    <div class="col-xs-3"><a class="pull-right logout btn btn-default">Logout</a></div>
+  </div>
+  <div class="action-bar">
+    <a class="show-done-toggle action btn btn-xs btn-default">
+      Done: {{doneStatus}}
+    </a>
+    <a class="done-to-bottom action btn btn-xs btn-default {{doneToBottom}} {{doneToBottomHidden}}">
+      Done to Bottom
+    </a>
+    <a class="add-list action btn btn-xs btn-default">
+      <i class="fa fa-plus"></i>
+      <i class="fa fa-list-ul"></i>
+    </a>
+    <span class="notice" hidden>
+      <span class="message"> {{notice}} </span>
+      <a class="undo" href="#"> Undo </a>
+    </span>
+  </div>
+  <input type="text" placeholder="new todo" class="add-todo form-control"/>
+  <ul class="todos sortable {{hideDone}}">
+    {{#each todos}}
+      {{> todo}}
+    {{/each}}
+  </ul>
+</template>
