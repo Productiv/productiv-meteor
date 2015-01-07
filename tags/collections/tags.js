@@ -4,8 +4,9 @@
   {
     _id       : String
     ownerId   : String
+    todoIds   : String[]
     itemId    : String
-    itemType  : String<user, todo, reminder, null(topic)>
+    itemType  : String<user, reminder, topic>
     title     : String
     createdAt : Number
     updatedAt : Number
@@ -14,27 +15,67 @@
 
 Tags = new Mongo.Collection('tags');
 
+Tags.helpers({
+  todos: function() {
+    return findTodos(this.ownerId);
+  },
+
+  owner: function() {
+    return findUser()
+  },
+
+  // TODO: add hook to remove tag if todoIds is empty
+  removeTodoIds: function(todoIds) {
+    updateTag(this._id, { $pull: { todoIds: todoIds } });
+  }
+});
+
+// TODO: add hook to create or update associated item
 insertTag = function(tag) {
   tag.createdAt = tag.createdAt || (new Date()).getTime();
   Tags.insert(tag);
 };
 
-updateTag = function(_id, newValues, callback) {
+// TODO: add hook to create or update associated item
+updateTag = function(_id, modifier, callback) {
+  Tags.update(_id, modifier, callback);
+};
+
+// TODO: add hook to create or update associated item
+setTag = function(_id, newValues, callback) {
+  newValues.updatedAt = (new Date()).getTime();
   Tags.update(_id, { $set: newValues }, callback);
 };
 
+Meteor.methods({
+
+  // TODO: add hook to create or update associated item
+  upsertTag: function(tag, callback) {
+    tag.createdAt = tag.createdAt || (new Date()).getTime();
+    var res = Tags.upsert({ title: tag.title }, { $set: tag });
+    callback(res);
+  }
+
+})
+
+// TODO: add hook to create or update associated item
 removeTag = function(_id) {
   Tags.remove(_id);
 };
 
-tag = function(_id) {
+findTag = function(_id) {
   return Tags.findOne(_id);
 };
 
-tags = function(selector, options) {
-  selector = selector || {};
-  options  = options  || {};
-  return Tags.find(selector, options);
+// findTags = function(selector, options) {
+//   selector = selector || {};
+//   options  = options  || {};
+//   return Tags.find(selector, options);
+// };
+
+findTags = function(ids) {
+  if(!ids) return;
+  return Tags.find({ _id: { $in: ids } });
 };
 
 allTags = function() {
@@ -43,6 +84,10 @@ allTags = function() {
 
 userTags = function(uid) {
   return Tags.find({ ownerId: uid });
+};
+
+userTodoTags = function(uid, todoId) {
+  return Tags.find({ ownerId: uid, todoIds: todoId });
 };
 
 userItemTags = function(uid, itemId) {

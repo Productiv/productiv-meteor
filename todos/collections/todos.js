@@ -5,7 +5,6 @@
     _id       : String
     ownerId   : String
     title     : String
-    tagIds    : String[]
     isDone    : Boolean
     createdAt : Number
     updatedAt : Number
@@ -13,6 +12,31 @@
 *******************************************************************************/
 
 Todos = new Mongo.Collection('todos');
+
+Todos.helpers({
+
+  owner: function() {
+    return findUser(this.ownerId);
+  },
+
+  tags: function() {
+    return userTodoTags(this.ownerId, this._id);
+  },
+
+  removeTags: function(tags) {
+    //TODO: optionally accept tags or tagIds
+    tags.forEach(function(tag, index) {
+      tag.removeTodoIds(this._id);
+    });
+  },
+
+  addTags: function(tags) {
+    tags.forEach(function(tag, index) {
+      Tags.upsert(tag._id, { $set: tag, $push: { todoIds: this._id } });
+    });
+  }
+
+});
 
 insertTodo = function(todo) {
   todo.createdAt = todo.createdAt || (new Date()).getTime();
@@ -31,9 +55,18 @@ Meteor.methods({
     });
   }
 
-})
+});
 
-updateTodo = function(_id, newValues, callback) {
+updateTodo = function(_id, modifier, callback) {
+  // var keys = _.keys(modifier);
+  // if(!_.every(keys, isFirstChar('$'))) modifier = { $set: modifier };
+  if(!modifier.$set) modifier.$set = { updatedAt: (new Date()).getTime() };
+  else modifier.$set.updatedAt = (new Date()).getTime();
+  Todos.update(_id, modifier, callback);
+};
+
+setTodo = function(_id, newValues, callback) {
+  newValues.updatedAt = (new Date()).getTime();
   Todos.update(_id, { $set: newValues }, callback);
 };
 
@@ -41,15 +74,20 @@ removeTodo = function(_id) {
   Todos.remove(_id);
 };
 
-todo = function(_id) {
+findTodo = function(_id) {
   return Todos.findOne(_id);
 };
 
-todos = function(selector, options) {
-  selector = selector || {};
-  options  = options  || {};
-  return Todos.find(selector, options);
+findTodos = function(ids) {
+  if(!ids) return;
+  return Todos.find({ _id: { $in: ids } });
 };
+
+// findTodos = function(selector, options) {
+//   selector = selector || {};
+//   options  = options  || {};
+//   return Todos.find(selector, options);
+// };
 
 allTodos = function() {
   return Todos.find();

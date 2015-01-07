@@ -5,7 +5,7 @@
     _id       : String
     userId    : String
     itemId    : String
-    itemType  : String<todo, tag, location, reminder>
+    itemType  : String<todo, tag, reminder>
     read      : Boolean
     write     : Boolean
     collabs   : Boolean

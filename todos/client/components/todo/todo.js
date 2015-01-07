@@ -20,29 +20,56 @@ Template.todo.helpers({
   },
 
   tags: function() {
-    return userItemTags(Meteor.userId(), this._id);
+    return tags(this.tagIds);
   }
 
 });
 
-function parseTags(str) {
+function parseTags(str, todo) {
+  // inverse of map in todoTag.js
   var map = {
     '~' : 'user',
-    '&' : 'todo',
     '@' : 'reminder',
-    '#' : null
+    '#' : 'topic'
   };
 
-  var tags = str.match(/([\@\~\&\#][\w\-]+)/g);
-  console.log('tags: ', tags);
+  var newTags = str.match(/([\@\~\&\#][\w\-]+)/g);
+
+  newTags = newTags.map(function(tag, index) {
+    console.log('tag: ', tag);
+    var obj = {}
+    obj.title = tag.substring(1);
+    obj.itemType = map[tag.substring(0, 1)];
+    console.log('obj: ', obj);
+    obj.ownerId = Meteor.userId();
+    return obj;
+  });
+
+  var tags = todo.tags();
+
+  // get all old tags
+  var oldTags = _.reject(tags, function(tag) {
+    _.contains(_.pluck(newTags, title), tag.title);
+  });
+
+  // remove old tags
+  todo.removeTags(oldTags);
+
+  // filter by brand new tags
+  var brandNewTags = _.reject(newTags, function(tag) {
+    _.contains(_.pluck(tags, title), tag.title);
+  });
+
+  // add new tags
+  todo.addTags(brandNewTags);
 
   return str;
 }
 
-function updateTitle(e, todoId) {
-  var title = parseTags($(e.target).val());
+function updateTitle(e, todo) {
+  var title = parseTags($(e.target).val(), todo);
   var $todo = $(e.target).parents('.todo');
-  var id = todoId;
+  var id = todo._id;
   $todo.attr('draggable', true);
   updateTodo(id, { title: title });
   Session.set('todo-' + id, '');
@@ -103,7 +130,7 @@ Template.todo.events({
       });
     } else if(e.which === 13) { // Press Enter
       e.preventDefault();
-      updateTitle(e, this._id);
+      updateTitle(e, this);
     } else if(e.which === 27) { // Press Esc
       var $todo = $(e.target).parents('.todo');
       Session.set('todo-' + this._id, '');
@@ -113,7 +140,7 @@ Template.todo.events({
   'focusout .title-input': function(e) {
     e.preventDefault();
     if(Session.get('todo-' + this._id) !== 'editing') return false;
-    updateTitle(e, this._id);
+    updateTitle(e, this);
   },
 
   'click .remove': function(e) {
