@@ -18,3 +18,9 @@ Template.todoTag.helpers({
     return map[type];
   }
 });
+
+Template.todoTag.events({
+  'click a': function (e) {
+    e.stopPropagation();
+  }
+});

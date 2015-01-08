@@ -10,6 +10,16 @@
   }
 *******************************************************************************/
 
+// Meteor.users.helpers({
+//   email: function() {
+//     return this.emails[0] && this.emails[0].address;
+//   },
+
+//   name: function() {
+//     return this.profile && this.profile.name;
+//   }
+// });
+
 findUser = function(uid) {
   return Meteor.users.findOne(uid);
 };

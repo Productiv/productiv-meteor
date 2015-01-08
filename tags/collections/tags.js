@@ -35,10 +35,10 @@ setTag = function(_id, newValues, callback) {
 Meteor.methods({
 
   // TODO: add hook to create or update associated item
-  upsertTag: function(tag, callback) {
-    tag.createdAt = tag.createdAt || (new Date()).getTime();
-    var res = Tags.upsert({ title: tag.title }, { $set: tag });
-    callback(res);
+  upsertTag: function(selector, modifier, callback) {
+    // tag.createdAt = tag.createdAt || (new Date()).getTime();
+    var res = Tags.upsert(selector, modifier);
+    if(callback) callback(res);
   }
 
 })
@@ -65,6 +65,10 @@ findTags = function(ids) {
 
 allTags = function() {
   return Tags.find();
+};
+
+todoTags = function(todoId) {
+  return Tags.find({ todoIds: todoId });
 };
 
 userTags = function(uid) {
