@@ -128,9 +128,10 @@ Template.todosPage.events({
     var title = $(e.target).val();
     var uid = Meteor.userId();
 
-    parseTags(title);
-
     Meteor.call('insertTodoAtFirstIndex', { title: title, ownerId: uid });
+
+    // TODO: not rely on todoId.
+    parseTags(title);
 
     $(e.target).val('');
   },

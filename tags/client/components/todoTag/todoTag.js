@@ -29,8 +29,10 @@ Template.todoTag.events({
     e.stopPropagation();
     var query = $('.filter').val();
     if(query.indexOf('tag:' + this.title) > -1) return false;
-    if(query.length > 0) $('.filter').val(query + ' tag:' + this.title);
-    else                 $('.filter').val('tag:' + this.title);
+    if(query.length > 0) query = query + ' tag:' + this.title;
+    else                 query = 'tag:' + this.title;
+    $('.filter').val(query);
+    Session.setPersistent('filter', query);
     return false;
   }
 });

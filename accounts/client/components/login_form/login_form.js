@@ -29,10 +29,8 @@ Template.loginForm.events({
       if (error) {
         console.log("Error authenticating user:", error);
         $('.notice').html(error.reason);
-        return false;
       }
 
-      console.log("User ID: " + user.uid + ", Provider: " + user.provider);
       Router.go('/');
     });
   },
@@ -56,7 +54,7 @@ Template.loginForm.events({
     }, function (error) {
       if (error) {
         console.log("Error authenticating user:", error);
-        $('.notice').html(error);
+        $('.notice').html(error.reason);
       }
       else Router.go('/');
     });
