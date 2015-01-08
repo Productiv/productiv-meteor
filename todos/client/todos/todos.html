@@ -23,7 +23,14 @@
           <a class="undo" href="#"> Undo </a>
         </span>
       </div>
-      <input type="text" placeholder="new todo" class="add-todo form-control"/>
+      <div class="row input-bar">
+        <div class="col-lg-8">
+          <input type="text" placeholder="new todo" class="add-todo form-control"/>
+        </div>
+        <div class="col-lg-4 pl-none">
+          <input type="search" placeholder="filter" class="filter form-control"/>
+        </div>
+      </div>
       <ul class="todos sortable {{hideDone}}">
         {{#each todos}}
           {{> todo}}

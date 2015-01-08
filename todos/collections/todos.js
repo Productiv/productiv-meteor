@@ -123,6 +123,22 @@ userTodosByIndexBy = function(uid, sortBy, sortOrder) {
   });
 };
 
+userTodosByTagTitles = function(uid, tagTitles) {
+  var todoIds = _.pluck(userTodos(uid).fetch(), '_id');
+  console.log('tagTitles: ', tagTitles)
+  var tags = Tags.find({ title: { $in: tagTitles } }).fetch();
+  console.log('tags: ', tags)
+  var possibleIds = _.flatten(_.pluck(tags, 'todoIds'));
+  console.log('possibleIds: ', possibleIds)
+  var ids = _.filter(todoIds, function(id) {
+    return _.contains(possibleIds, id);
+  });
+  console.log('ids: ', ids)
+  var todos = Todos.find({ _id: { $in: ids } });
+  console.log('todos: ', todos.fetch())
+  return todos;
+};
+
 userTodosByNewest = function(uid) {
   return Todos.find({ ownerId: uid }, { sort: { createdAt: 'desc' } });
 };

@@ -1,11 +1,5 @@
 
 Template.todoTag.helpers({
-  link: function() {
-    var type = this.itemType;
-    var itemId = this.itemId;
-    return '#?=tag:' + this.title;
-  },
-
   lead: function() {
     // inverse of map in todo.js
     var map = {
@@ -21,6 +15,22 @@ Template.todoTag.helpers({
 
 Template.todoTag.events({
   'click a': function (e) {
+    // e.preventDefault();
+    // var url = window.location.href;
+    // var type = this.itemType;
+    // var itemId = this.itemId;
+    // if(url.indexOf('?') === url.length - 1 ||
+    //    url.indexOf('&') === url.length - 1)
+    //   window.location.href = url + 'tags[]=' + this.title;
+    // else if(url.indexOf('?') > -1)
+    //   window.location.href = url + '&tags[]=' + this.title;
+    // else
+    //   window.location.href = url + '?tags[]=' + this.title;
     e.stopPropagation();
+    var query = $('.filter').val();
+    if(query.indexOf('tag:' + this.title) > -1) return false;
+    if(query.length > 0) $('.filter').val(query + ' tag:' + this.title);
+    else                 $('.filter').val('tag:' + this.title);
+    return false;
   }
 });

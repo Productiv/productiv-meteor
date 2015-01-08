@@ -14,6 +14,7 @@ toggleDoneHidden = function() {
 
 Template.todosPage.rendered = function () {
   setDoneStatus();
+  $('.filter').val(Session.get('filter'));
   var $todos = document.getElementsByClassName('sortable')[0];
   var sortable = new Sortable($todos, {
     ghostClass: "sortable-placeholder",  // Class name for the drop placeholder
@@ -36,6 +37,21 @@ Template.todosPage.rendered = function () {
   });
 };
 
+function getTags(str) {
+  var tags = str.match(/(?:#([^ #]+))/g);
+  var tagTitles = _.map(tags, function(s) {
+    return s.substring(1);
+  });
+  return tagTitles;
+};
+
+function removeTags(str) {
+  _.each(str.match(/(?:#([^ #]+))/g), function(s) {
+    str = str.replace(s, '');
+  });
+  return str;
+};
+
 Template.todosPage.helpers({
 
   todos: function () {
@@ -45,9 +61,37 @@ Template.todosPage.helpers({
     var isDoneHidden = Session.get('isDoneHidden');
     if(sortBy === 'isDone' && isDoneHidden) sortBy = false;
 
-    if(sortBy) return userTodosByIndexBy(uid, sortBy, sortOrder);
-    else       return userTodosByIndex(uid);
+    var query = Session.get('filter');
+    if(!query || query.length === 0) {
+      if(sortBy) return userTodosByIndexBy(uid, sortBy, sortOrder);
+      else       return userTodosByIndex(uid);
+    }
 
+    console.log('==== query: ', query)
+
+    var tagTitles  = getTags(query);
+    var title = removeTags(query);
+    console.log('title: ', title)
+    if(tagTitles.length > 0)
+      var todos = userTodosByTagTitles(uid, tagTitles);
+    else
+      var todos = userTodos(uid)
+
+    console.log('todos: ', todos.fetch())
+
+    if(title) {
+      var options = {
+        keys: ['title'],   // keys to search in
+        id: '_id'          // return a list of identifiers only
+      }
+      var f = new Fuse(todos.fetch(), options);
+      console.log('title: ', title)
+      var result = f.search(title);
+      console.log('result: ', result)
+      return Todos.find({ _id: { $in: result } });
+    } else {
+      return todos;
+    }
   },
 
   notice: function() {
@@ -87,6 +131,10 @@ Template.todosPage.events({
     Meteor.call('insertTodoAtFirstIndex', { title: title, ownerId: uid });
 
     $(e.target).val('');
+  },
+
+  'input .filter': function(e) {
+    Session.setPersistent('filter', $(e.target).val());
   },
 
   'mouseenter .show-done-toggle': function(e) {
