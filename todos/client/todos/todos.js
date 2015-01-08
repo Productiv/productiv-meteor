@@ -9,6 +9,7 @@ setDoneStatus = function() {
 toggleDoneHidden = function() {
   var isHidden = Session.get('isDoneHidden');
   Session.setPersistent('isDoneHidden', !isHidden);
+  if(isHidden) $('.todo').show();
 };
 
 Template.todosPage.rendered = function () {

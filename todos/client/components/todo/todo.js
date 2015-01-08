@@ -17,57 +17,12 @@ Template.todo.helpers({
 
   draggable: function() {
     return Session.get('todo-' + this._id) !== 'editing'
-  },
-
-  tags: function() {
-    return tags(this.tagIds);
   }
 
 });
 
-function parseTags(str, todo) {
-  // inverse of map in todoTag.js
-  var map = {
-    '~' : 'user',
-    '@' : 'reminder',
-    '#' : 'topic'
-  };
-
-  var newTags = str.match(/([\@\~\&\#][\w\-]+)/g);
-
-  newTags = newTags.map(function(tag, index) {
-    console.log('tag: ', tag);
-    var obj = {}
-    obj.title = tag.substring(1);
-    obj.itemType = map[tag.substring(0, 1)];
-    console.log('obj: ', obj);
-    obj.ownerId = Meteor.userId();
-    return obj;
-  });
-
-  var tags = todo.tags();
-
-  // get all old tags
-  var oldTags = _.reject(tags, function(tag) {
-    _.contains(_.pluck(newTags, title), tag.title);
-  });
-
-  // remove old tags
-  todo.removeTags(oldTags);
-
-  // filter by brand new tags
-  var brandNewTags = _.reject(newTags, function(tag) {
-    _.contains(_.pluck(tags, title), tag.title);
-  });
-
-  // add new tags
-  todo.addTags(brandNewTags);
-
-  return str;
-}
-
 function updateTitle(e, todo) {
-  var title = parseTags($(e.target).val(), todo);
+  var title = $(e.target).val();
   var $todo = $(e.target).parents('.todo');
   var id = todo._id;
   $todo.attr('draggable', true);
@@ -97,7 +52,7 @@ Template.todo.events({
       showUndo('Todo completed.', function() {
         // do nothing
       }, function() {
-        $todo.stop();
+        $todo.stop().show();
         updateTodo(_id, { isDone: !isDone });
       });
     }

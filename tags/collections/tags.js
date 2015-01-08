@@ -15,21 +15,6 @@
 
 Tags = new Mongo.Collection('tags');
 
-// Tags.helpers({
-//   todos: function() {
-//     return findTodos(this.ownerId);
-//   },
-
-//   owner: function() {
-//     return findUser()
-//   },
-
-//   // TODO: add hook to remove tag if todoIds is empty
-//   removeTodoIds: function(todoIds) {
-//     updateTag(this._id, { $pull: { todoIds: todoIds } });
-//   }
-// });
-
 // TODO: add hook to create or update associated item
 insertTag = function(tag) {
   tag.createdAt = tag.createdAt || (new Date()).getTime();
