@@ -63,8 +63,11 @@ Template.todosPage.helpers({
 
     var query = Session.get('filter');
     if(!query || query.length === 0) {
-      if(sortBy) return userTodosByIndexBy(uid, sortBy, sortOrder);
-      else       return userTodosByIndex(uid);
+      if(!sortBy || sortBy.length === 0) {
+        return userTodosByIndexBy(uid, sortBy, sortOrder);
+      } else {
+        return userTodosByIndex(uid);
+      }
     }
 
     console.log('==== query: ', query)
