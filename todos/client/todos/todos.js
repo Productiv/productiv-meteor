@@ -84,7 +84,12 @@ Template.todosPage.helpers({
         keys: ['title'],   // keys to search in
         id: '_id'          // return a list of identifiers only
       }
-      var f = new Fuse(tagsWithTitles(todos.fetch()), options);
+
+      var wTags = titlesWithTags(todos.fetch());
+
+      console.log('wTags: ', wTags)
+
+      var f = new Fuse(wTags, options);
       console.log('title: ', title)
       var result = f.search(title);
       console.log('result: ', result)

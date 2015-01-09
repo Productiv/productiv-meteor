@@ -42,11 +42,15 @@ titleWithTags = function(todo) {
   // if _id provided, get object
   if(typeof todo === 'string') todo = findTodo(todo);
   var title = todo.title;
+  title = title.replace(/\s*$/, ''); // hack becuse direct render in Blaze
+  console.log(title)
   var tags = todoTags(todo._id);
   tags.forEach(function(tag) {
-    title += tagTypeToSymbol(tag.type) + tag.title;
+    console.log('tag: ', tag)
+    title += ' ' + symbolForTagType[tag.itemType] + tag.title;
   });
-  return title;
+  todo.title = title;
+  return todo;
 };
 
 titlesWithTags = function(todos) {

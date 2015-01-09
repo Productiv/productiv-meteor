@@ -21,9 +21,10 @@ Template.todoTag.events({
     //   window.location.href = url + '?tags[]=' + this.title;
     e.stopPropagation();
     var query = $('.filter').val();
+    var tagText = symbolForTagType[this.itemType] + this.title;
     if(query.indexOf('tag:' + this.title) > -1) return false;
-    if(query.length > 0) query = query + ' tag:' + this.title;
-    else                 query = 'tag:' + this.title;
+    if(query.length > 0) query += ' ' + tagText;
+    else                 query += tagText;
     $('.filter').val(query);
     Session.setPersistent('filter', query);
     return false;
