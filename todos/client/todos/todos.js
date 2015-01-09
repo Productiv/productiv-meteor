@@ -63,7 +63,7 @@ Template.todosPage.helpers({
 
     var query = Session.get('filter');
     if(!query || query.length === 0) {
-      if(!sortBy || sortBy.length === 0) {
+      if(sortBy && sortBy.length !== 0) {
         return userTodosByIndexBy(uid, sortBy, sortOrder);
       } else {
         return userTodosByIndex(uid);
