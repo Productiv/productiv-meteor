@@ -38,6 +38,21 @@ Todos = new Mongo.Collection('todos');
 
 // });
 
+titleWithTags = function(todo) {
+  // if _id provided, get object
+  if(typeof todo === 'string') todo = findTodo(todo);
+  var title = todo.title;
+  var tags = todoTags(todo._id);
+  tags.forEach(function(tag) {
+    title += tagTypeToSymbol(tag.type) + tag.title;
+  });
+  return title;
+};
+
+titlesWithTags = function(todos) {
+  return _.map(todos, titleWithTags);
+};
+
 insertTodo = function(todo) {
   todo.createdAt = todo.createdAt || (new Date()).getTime();
   todo.isDone    = todo.isDone    || false;

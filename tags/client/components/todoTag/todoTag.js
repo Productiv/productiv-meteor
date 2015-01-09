@@ -1,15 +1,8 @@
 
 Template.todoTag.helpers({
   lead: function() {
-    // inverse of map in todo.js
-    var map = {
-      'user'    : '~',
-      'reminder': '@',
-      'topic'   : '#'
-    };
-
     var type = this.itemType;
-    return map[type];
+    return symbolForTagType[type];
   }
 });
 

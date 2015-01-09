@@ -1,20 +1,20 @@
 
 parseTags = function(str, todo) {
-  // inverse of map in todoTag.js
-  var map = {
-    '~' : 'user',
-    '@' : 'reminder',
-    '#' : 'topic'
-  };
 
   var newTags = str.match(/([\@\~\&\#][\w\-]+)/g);
 
   if(!newTags) return str;
 
+  newTags.forEach(function(tag) {
+    str = str.replace(tag, '');
+  });
+
+  str = str.replace(/\s*^/, '');
+
   newTags = newTags.map(function(tag, index) {
     var obj = {}
     obj.title = tag.substring(1);
-    obj.itemType = map[tag.substring(0, 1)];
+    obj.itemType = tagTypeForSymbol[tag.substring(0, 1)];
     obj.ownerId = Meteor.userId();
     return obj;
   });
