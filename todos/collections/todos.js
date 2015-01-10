@@ -104,6 +104,11 @@ findTodos = function(ids) {
   return Todos.find({ _id: { $in: ids } });
 };
 
+todosByIndex = function(selector) {
+  if(!selector) selector = {};
+  return Todos.find(selector, { sort: [[ 'index', 'asc' ]] });
+};
+
 // findTodos = function(selector, options) {
 //   selector = selector || {};
 //   options  = options  || {};

@@ -96,7 +96,7 @@ Template.todosPage.helpers({
       console.log('title: ', title)
       var result = f.search(title);
       console.log('result: ', result)
-      return Todos.find({ _id: { $in: result } });
+      return todosByIndex({ _id: { $in: result } });
     } else {
       return todos;
     }
