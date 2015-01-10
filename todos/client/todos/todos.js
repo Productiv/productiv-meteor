@@ -133,13 +133,16 @@ Template.todosPage.events({
   'keydown .add-todo': function (e) {
     if(e.which !== 13) return;
 
-    var title = $(e.target).val();
+    var wTags = $(e.target).val();
+    var titleNoTags = removeTags(wTags);
     var uid = Meteor.userId();
 
-    Meteor.call('insertTodoAtFirstIndex', { title: title, ownerId: uid });
-
-    // TODO: not rely on todoId.
-    parseTags(title);
+    Meteor.call('insertTodoAtFirstIndex', { title: titleNoTags, ownerId: uid }, function(id) {
+      // TODO: not rely on todoId.
+      var todo = Todos.find(id);
+      console.log('id: ', id)
+      parseTags(wTags, todo);
+    });
 
     $(e.target).val('');
   },

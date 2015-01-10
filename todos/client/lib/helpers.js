@@ -19,7 +19,12 @@ parseTags = function(str, todo) {
     return obj;
   });
 
-  var tags = userTodoTags(todo.ownerId, todo._id).fetch(); // todo.tags();
+  console.log('newTags: ', newTags)
+
+  var tags
+  if(todo && todo._id && todo.ownerId) {
+    tags = userTodoTags(todo.ownerId, todo._id).fetch(); // todo.tags();
+  }
 
   if(tags) {
     // get all old tags

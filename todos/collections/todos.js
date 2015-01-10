@@ -57,20 +57,22 @@ titlesWithTags = function(todos) {
   return _.map(todos, titleWithTags);
 };
 
-insertTodo = function(todo) {
+insertTodo = function(todo, callback) {
   todo.createdAt = todo.createdAt || (new Date()).getTime();
   todo.isDone    = todo.isDone    || false;
   if(todo.index === undefined || todo.index === null) // index might be 0
     todo.index = 0;
-  Todos.insert(todo);
+  var newTodoId = Todos.insert(todo);
+  console.log('newtodo: ', newTodoId)
+  if(callback) callback(newTodoId);
 };
 
 Meteor.methods({
 
-  insertTodoAtFirstIndex: function(todo) {
+  insertTodoAtFirstIndex: function(todo, callback) {
     Todos.update({}, { $inc: { index: 1 } }, { multi: true }, function() {
       todo.index = 0;
-      insertTodo(todo);
+      insertTodo(todo, callback);
     });
   }
 
