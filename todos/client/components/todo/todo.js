@@ -64,9 +64,10 @@ Template.todo.events({
     $todo.children('.title-input').focus();
   },
 
-  'click .title': function(e) {
+  'click .description': function(e) {
     var $todo = $(e.target).parents('.todo');
-    $todo.data('title', this.title);
+    var fullTitle = $todo.find('.description').text().betterTrim();
+    $todo.data('title', fullTitle);
     Session.set('todo-' + this._id, 'editing');
     $todo.attr('draggable', false);
   },

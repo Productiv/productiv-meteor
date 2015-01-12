@@ -70,17 +70,17 @@ Template.todosPage.helpers({
       }
     }
 
-    console.log('==== query: ', query)
+    // console.log('==== query: ', query)
 
     var tagTitles  = getTags(query);
     var title = removeTags(query);
-    console.log('title: ', title)
+    // console.log('title: ', title)
     if(tagTitles.length > 0)
       var todos = userTodosByTagTitles(uid, tagTitles);
     else
       var todos = userTodos(uid)
 
-    console.log('todos: ', todos.fetch())
+    // console.log('todos: ', todos.fetch())
 
     if(title) {
       var options = {
@@ -90,12 +90,12 @@ Template.todosPage.helpers({
 
       var wTags = titlesWithTags(todos.fetch());
 
-      console.log('wTags: ', wTags)
+      // console.log('wTags: ', wTags)
 
       var f = new Fuse(wTags, options);
-      console.log('title: ', title)
+      // console.log('title: ', title)
       var result = f.search(title);
-      console.log('result: ', result)
+      // console.log('result: ', result)
       return todosByIndex({ _id: { $in: result } });
     } else {
       return todos;
@@ -136,12 +136,13 @@ Template.todosPage.events({
     var wTags = $(e.target).val();
     var titleNoTags = removeTags(wTags);
     var uid = Meteor.userId();
+    var todo = { title: titleNoTags, ownerId: uid };
 
-    Meteor.call('insertTodoAtFirstIndex', { title: titleNoTags, ownerId: uid }, function(id) {
-      // TODO: not rely on todoId.
-      var todo = Todos.find(id);
-      console.log('id: ', id)
-      parseTags(wTags, todo);
+    Meteor.call('incrementTodoIndices', function() {
+      insertTodo(todo, function(err, id) {
+        // TODO: not rely on todoId.
+        parseTags(wTags, id);
+      });
     });
 
     $(e.target).val('');

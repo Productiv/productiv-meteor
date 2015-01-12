@@ -16,9 +16,9 @@
 Tags = new Mongo.Collection('tags');
 
 // TODO: add hook to create or update associated item
-insertTag = function(tag) {
+insertTag = function(tag, callback) {
   tag.createdAt = tag.createdAt || (new Date()).getTime();
-  Tags.insert(tag);
+  Tags.insert(tag, callback);
 };
 
 // TODO: add hook to create or update associated item
@@ -32,21 +32,27 @@ setTag = function(_id, newValues, callback) {
   Tags.update(_id, { $set: newValues }, callback);
 };
 
-Meteor.methods({
+// // TODO: add hook to create or update associated item
+// addTagToTodo = function(tagId, modifier, callback) {
+//   Tags.update(_id, modifier, callback);
+// };
 
-  // TODO: add hook to create or update associated item
-  upsertTag: function(selector, modifier, callback) {
-    // tag.createdAt = tag.createdAt || (new Date()).getTime();
-    var res = Tags.upsert(selector, modifier);
-    if(callback) callback(res);
-  }
+// Meteor.methods({
 
-})
+//   // TODO: add hook to create or update associated item
+//   upsertTag: function(selector, modifier, callback) {
+//     // tag.createdAt = tag.createdAt || (new Date()).getTime();
+//     var res = Tags.upsert(selector, modifier);
+//     console.log('res: ', res);
+//     if(callback) callback(res);
+//   }
+
+// });
 
 // TODO: add hook to create or update associated item
-removeTag = function(_id) {
-  Tags.remove(_id);
-};
+// removeTag = function(_id) {
+//   Tags.remove(_id);
+// };
 
 findTag = function(_id) {
   return Tags.findOne(_id);
