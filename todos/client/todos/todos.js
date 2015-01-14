@@ -19,20 +19,39 @@ Template.todosPage.rendered = function () {
   var sortable = new Sortable($todos, {
     ghostClass: "sortable-placeholder",  // Class name for the drop placeholder
     onEnd: function (e) {
-      el = e.item;
-      before = $(e.item).prev().get(0);
-      after = $(e.item).next().get(0);
+      var todoId = e.item.id;
+      var oldIndex = e.oldIndex;
+      var newIndex = e.newIndex;
 
-      var newIndex;
-      if(!before) {
-        newIndex = Blaze.getData(after).index - 1;
-      } else if(!after) {
-        newIndex = Blaze.getData(before).index + 1;
-      } else {
-        newIndex = (Blaze.getData(after).index + Blaze.getData(before).index)/2;
+      console.log('todoId: ', todoId);
+      console.log('old: ', oldIndex);
+      console.log('new: ', newIndex);
+
+      function update() {
+        updateTodo(todoId, { $set: { index: newIndex } });
+      };
+
+      if(oldIndex < newIndex) {
+        var start = oldIndex + 1;
+        var end = newIndex;
+        console.log('-1 start, end: ', start,
+                    ',', end);
+        Meteor.call('decrementTodoIndices',
+                    start,
+                    end,
+                    update);
+      } else if(oldIndex > newIndex) {
+        var start = newIndex;
+        var end = oldIndex - 1;
+        console.log('+1 start, end: ', start,
+                    ',', end);
+        Meteor.call('incrementTodoIndices',
+                    start,
+                    end,
+                    update);
+      } else { // same place
+        return;
       }
-
-      Todos.update({_id: Blaze.getData(el)._id}, {$set: {index: newIndex}});
     }
   });
 };

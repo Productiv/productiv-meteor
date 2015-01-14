@@ -66,12 +66,29 @@ insertTodo = function(todo, callback) {
   Todos.insert(todo, callback);
 };
 
+function changeTodoIndices(amount) {
+
+  // start and end are both inclusive
+  // must provide start & end or neither
+  // callback takes (err, id) as params
+  return function(start, end) {
+    var selector;
+
+    if(!start || !end)
+      selector = {};
+    else
+      selector = { index: { $gte: start, $lte: end } };
+
+    Todos.update(selector, { $inc: { index: amount } }, { multi: true });
+  };
+
+};
+
 Meteor.methods({
 
-  // callback takes (err, id) as params
-  incrementTodoIndices: function() {
-    Todos.update({}, { $inc: { index: 1 } }, { multi: true });
-  }
+  incrementTodoIndices: changeTodoIndices(1),
+
+  decrementTodoIndices: changeTodoIndices(-1)
 
 });
 
