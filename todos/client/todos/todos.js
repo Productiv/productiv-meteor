@@ -121,6 +121,12 @@ Template.todosPage.helpers({
     }
   },
 
+  tags: function () {
+    var tags = userTags(Meteor.userId());
+    console.log('tags', tags.fetch());
+    return Tags.find({ownerId: Meteor.userId()});
+  },
+
   notice: function() {
     return Session.get('notice');
   },

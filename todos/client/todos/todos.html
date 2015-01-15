@@ -1,6 +1,13 @@
 <template name="todosPage">
   <div class="row">
-    <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+    <div class="sidebar col-md-6 col-md-offset-3 col-lg-6">
+      <div class="taglist">
+        {{#each tags}}
+          {{> todoTag}}
+        {{/each}}
+      </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-lg-offset-3">
       <div class="row header">
         <div class="col-xs-9">
           <h1 class="heading">{{currentUser.profile.name}}'s todos</h1>

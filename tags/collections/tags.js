@@ -32,12 +32,24 @@ setTag = function(_id, newValues, callback) {
   Tags.update(_id, { $set: newValues }, callback);
 };
 
-// // TODO: add hook to create or update associated item
-// addTagToTodo = function(tagId, modifier, callback) {
-//   Tags.update(_id, modifier, callback);
-// };
+// TODO: add hook to create or update associated item
+addTagToTodo = function(tagId, todoId) {
+  Tags.update(_id, { todoIds: { $addToSet: todoId } });
+};
 
-// Meteor.methods({
+// TODO: add hook to create or update associated item
+removeTagFromTodo = function(tagId, modifier, callback) {
+  Tags.update(_id, { todoIds: { $pull: todoId } });
+  var tag = Tags.find(tagId);
+  if(tag.todoIds.length === 0) removeTag(tagId);
+};
+
+// TODO: add hook to create or update associated item
+removeTag = function(_id) {
+  Tags.remove(_id);
+};
+
+Meteor.methods({
 
 //   // TODO: add hook to create or update associated item
 //   upsertTag: function(selector, modifier, callback) {
@@ -47,12 +59,9 @@ setTag = function(_id, newValues, callback) {
 //     if(callback) callback(res);
 //   }
 
-// });
+   removeTag: removeTag
 
-// TODO: add hook to create or update associated item
-// removeTag = function(_id) {
-//   Tags.remove(_id);
-// };
+});
 
 findTag = function(_id) {
   return Tags.findOne(_id);
