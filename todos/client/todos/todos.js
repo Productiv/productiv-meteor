@@ -166,7 +166,7 @@ Template.todosPage.events({
     Meteor.call('incrementTodoIndices', function() {
       insertTodo(todo, function(err, id) {
         // TODO: not rely on todoId.
-        parseTags(wTags, id);
+        parseTodoTitleTags(wTags, id);
       });
     });
 

@@ -1,5 +1,5 @@
 
-parseTags = function(str, todo) {
+parseTodoTitleTags = function(str, todo) {
   var ownerId = todo.ownerId || Meteor.userId();
   var todoId = todo._id || todo;
 
@@ -23,30 +23,32 @@ parseTags = function(str, todo) {
 
   console.log('newTags: ', newTags)
 
-  var tags
+  var currentTags
   if(todoId && ownerId) {
-    tags = userTodoTags(ownerId, todoId).fetch(); // todo.tags();
+   currentTags = userTodoTags(ownerId, todoId).fetch(); // todo.tags();
   }
 
-  if(tags) {
+  function tagIn(col) {
+    return function(tag) {
+      return _.contains(_.pluck(col, 'title'), tag.title);
+    };
+  };
+
+  if(currentTags) {
     // get all old tags
-    var oldTags = _.reject(tags, function(tag) {
-      return _.contains(_.pluck(newTags, 'title'), tag.title);
-    });
+    var oldTags = _.reject(currentTags, tagIn(newTags));
 
     console.log('oldTags: ', oldTags)
 
     // remove old tags
     // todo.removeTags(oldTags);
     oldTags.forEach(function(tag, index) {
-      // tag.removeTodoIds(this._id);
-      updateTag(tag._id, { $pull: { todoIds: todoId } });
+      removeTagFromTodo(tag._id, todoId);
+      // updateTag(tag._id, { $pull: { todoIds: todoId } });
     });
 
     // filter by brand new tags
-    var brandNewTags = _.reject(newTags, function(tag) {
-      return _.contains(_.pluck(tags, 'title'), tag.title);
-    });
+    var brandNewTags = _.reject(newTags, tagIn(currentTags));
   } else {
     var brandNewTags = newTags;
   }
@@ -55,11 +57,12 @@ parseTags = function(str, todo) {
   // add new tags
   // todo.addTags(brandNewTags);
   brandNewTags.forEach(function(tag, index) {
-    var oldTag = findTag(tag);
-    console.log('oldTag: ', oldTag)
-    if(oldTag) {
-      console.log("true")
-      updateTag(oldTag._id, { $push: { todoIds: todoId } });
+    var currentTag = findTag(tag);
+    console.log('currentTag: ', currentTag)
+    if(currentTag) {
+      console.log("tag is current")
+      addTagToTodo(currentTag._id, todoId)
+      // updateTag(currentTag._id, { $push: { todoIds: todoId } });
     } else {
       tag.todoIds = [ todoId ];
       console.log("tag: ", tag)

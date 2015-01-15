@@ -26,7 +26,7 @@ Template.todo.helpers({
 });
 
 function updateTitle(e, todo) {
-  var title = parseTags($(e.target).val(), todo);
+  var title = parseTodoTitleTags($(e.target).val(), todo);
   var $todo = $(e.target).parents('.todo');
   var id = todo._id;
   $todo.attr('draggable', true);

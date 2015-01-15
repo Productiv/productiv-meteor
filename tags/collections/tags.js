@@ -38,10 +38,10 @@ addTagToTodo = function(tagId, todoId) {
 };
 
 // TODO: add hook to create or update associated item
-removeTagFromTodo = function(tagId, modifier, callback) {
-  Tags.update(_id, { todoIds: { $pull: todoId } });
+removeTagFromTodo = function(tagId, todoId) {
+  Tags.update(tagId, { $pull: { todoIds: todoId } });
   var tag = Tags.find(tagId);
-  if(tag.todoIds.length === 0) removeTag(tagId);
+  if(!tag.todoIds || tag.todoIds.length === 0) removeTag(tagId);
 };
 
 // TODO: add hook to create or update associated item
