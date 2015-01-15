@@ -34,7 +34,7 @@ setTag = function(_id, newValues, callback) {
 
 // TODO: add hook to create or update associated item
 addTagToTodo = function(tagId, todoId) {
-  Tags.update(_id, { todoIds: { $addToSet: todoId } });
+  Tags.update(tagId, { todoIds: { $addToSet: todoId } });
 };
 
 // TODO: add hook to create or update associated item
