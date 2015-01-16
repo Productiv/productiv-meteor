@@ -15,6 +15,43 @@
 
 Tags = new Mongo.Collection('tags');
 
+Tags.helpers({
+
+  owner: function () {
+    return findUser(this.ownerId);
+  },
+
+  todos: function () {
+    return Todos.find({ _id : { $in: this.todoIds } });
+  },
+
+  item: function () {
+    switch(itemType) {
+      case "topic":
+        return this.title;
+      case "reminder":
+        return findReminder(this.itemId);
+      default:
+        return "itemType unknown";
+    }
+  },
+
+  // input: single or array of todoIds or todos
+  addTodos: function (todos) {
+    if(typeof todos === 'string' || typeof todos === 'object') todos = [todos];
+    if(typeof todos[0] === 'object') todos = _.pluck(todos, '_id');
+    updateTag(this._id, { $addToSet: { todoIds: { $each: todos } } });
+  },
+
+  // input: single or array of todoIds or todos
+  removeTodos: function (todos) {
+    if(typeof todos === 'string' || typeof todos === 'object') todos = [todos];
+    if(typeof todos[0] === 'object') todos = _.pluck(todos, '_id');
+    updateTag(this._id, { $pull: { $each: { todoIds: todos } } });
+  }
+
+});
+
 // TODO: add hook to create or update associated item
 insertTag = function(tag, callback) {
   tag.createdAt = tag.createdAt || (new Date()).getTime();
@@ -67,11 +104,12 @@ findTag = function(_id) {
   return Tags.findOne(_id);
 };
 
-// findTags = function(selector, options) {
-//   selector = selector || {};
-//   options  = options  || {};
-//   return Tags.find(selector, options);
-// };
+userTagByTitle = function(ownerId, title) {
+  return Tags.find({
+    ownerId: ownerId,
+    title: title
+  }).fetch()[0];
+};
 
 findTags = function(ids) {
   if(!ids) return;

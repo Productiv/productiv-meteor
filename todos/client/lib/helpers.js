@@ -1,17 +1,29 @@
 
-parseTodoTitleTags = function(str, todo) {
-  var ownerId = todo.ownerId || Meteor.userId();
-  var todoId = todo._id || todo;
+function parseTags(str) {
+  return title.match(/([\@\~\&\#][\w\-]+)/g);
+};
 
-  var newTags = str.match(/([\@\~\&\#][\w\-]+)/g);
-
-  if(!newTags) return str;
-
-  newTags.forEach(function(tag) {
+function removeTags(str) {
+  var tags = parseTags(str);
+  tags.forEach(function(tag) {
     str = str.replace(tag, '');
   });
+  return str.trim();
+};
 
-  str = str.replace(/\s*^/, '');
+parseTodoTitleTags = function(title, todo) {
+  var ownerId = todo.ownerId || Meteor.userId();
+  var todoId;
+  if(typeof todo === 'string') todoId = todo;
+  else if(typeof todo === 'object') todoId = todo._id;
+  else console.log('error: todo is neither object nor string.');
+
+  var newTags = parseTags(title);
+
+  if(!newTags) return title;
+
+  title = removeTags(title);
+  title = title.replace(/\s*^/, '');
 
   newTags = newTags.map(function(tag, index) {
     var obj = {}
@@ -25,8 +37,12 @@ parseTodoTitleTags = function(str, todo) {
 
   var currentTags
   if(todoId && ownerId) {
-   currentTags = userTodoTags(ownerId, todoId).fetch(); // todo.tags();
+    currentTags = userTodoTags(ownerId, todoId).fetch(); // todo.tags();
+  } else if(ownerId) {
+    currentTags = userTags(ownerId).fetch();
   }
+
+  console.log('currentTags: ', currentTags)
 
   function tagIn(col) {
     return function(tag) {
@@ -73,5 +89,5 @@ parseTodoTitleTags = function(str, todo) {
     }
   });
 
-  return str;
+  return title;
 }

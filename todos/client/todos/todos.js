@@ -23,10 +23,6 @@ Template.todosPage.rendered = function () {
       var oldIndex = e.oldIndex;
       var newIndex = e.newIndex;
 
-      console.log('todoId: ', todoId);
-      console.log('old: ', oldIndex);
-      console.log('new: ', newIndex);
-
       function update() {
         updateTodo(todoId, { $set: { index: newIndex } });
       };
@@ -34,8 +30,6 @@ Template.todosPage.rendered = function () {
       if(oldIndex < newIndex) {
         var start = oldIndex + 1;
         var end = newIndex;
-        console.log('-1 start, end: ', start,
-                    ',', end);
         Meteor.call('decrementTodoIndices',
                     start,
                     end,
@@ -43,15 +37,12 @@ Template.todosPage.rendered = function () {
       } else if(oldIndex > newIndex) {
         var start = newIndex;
         var end = oldIndex - 1;
-        console.log('+1 start, end: ', start,
-                    ',', end);
         Meteor.call('incrementTodoIndices',
                     start,
                     end,
                     update);
-      } else { // same place
-        return;
       }
+      // else same place
     }
   });
 };
@@ -89,17 +80,14 @@ Template.todosPage.helpers({
       }
     }
 
-    // console.log('==== query: ', query)
 
     var tagTitles  = getTags(query);
     var title = removeTags(query);
-    // console.log('title: ', title)
+
     if(tagTitles.length > 0)
       var todos = userTodosByTagTitles(uid, tagTitles);
     else
       var todos = userTodos(uid)
-
-    // console.log('todos: ', todos.fetch())
 
     if(title) {
       var options = {
@@ -108,13 +96,9 @@ Template.todosPage.helpers({
       }
 
       var wTags = titlesWithTags(todos.fetch());
-
-      // console.log('wTags: ', wTags)
-
       var f = new Fuse(wTags, options);
-      // console.log('title: ', title)
       var result = f.search(title);
-      // console.log('result: ', result)
+
       return todosByIndex({ _id: { $in: result } });
     } else {
       return todos;
@@ -164,8 +148,7 @@ Template.todosPage.events({
     var todo = { title: titleNoTags, ownerId: uid };
 
     Meteor.call('incrementTodoIndices', function() {
-      insertTodo(todo, function(err, id) {
-        // TODO: not rely on todoId.
+      Todos.insert(todo, function(err, id) {
         parseTodoTitleTags(wTags, id);
       });
     });

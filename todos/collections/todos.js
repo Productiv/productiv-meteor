@@ -13,30 +13,54 @@
 
 Todos = new Mongo.Collection('todos');
 
-// Todos.helpers({
+Todos.helpers({
 
-//   owner: function() {
-//     return findUser(this.ownerId);
-//   },
+  owner: function() {
+    return findUser(this.ownerId);
+  },
 
-//   tags: function() {
-//     return userTodoTags(this.ownerId, this._id);
-//   },
+  tags: function() {
+    return userTodoTags(this.ownerId, this._id);
+  },
 
-//   removeTags: function(tags) {
-//     //TODO: optionally accept tags or tagIds
-//     tags.forEach(function(tag, index) {
-//       tag.removeTodoIds(this._id);
-//     });
-//   },
+  // TODO: optionally take titles instead of ids
+  removeTags: function(tags) {
+    // optionally accept a single or array of tags or tagIds
+    tags = toArray(Tags, tags);
+    tags.forEach(function(tag, index) {
+      tag.removeTodoIds(this._id);
+    });
+  },
 
-//   addTags: function(tags) {
-//     tags.forEach(function(tag, index) {
-//       Tags.upsert(tag._id, { $set: tag, $push: { todoIds: this._id } });
-//     });
-//   }
+  // Takes an array of strings and adds the new ones
+  addTags: function(tags) {
+    // optionally accept a single or array of tags or tagIds
+    tags = toArray(Tags, tags);
+    tags.forEach(function(tag, index) {
+      Tags.upsert(tag._id, { $set: tag, $push: { todoIds: this._id } });
+    });
+  },
 
-// });
+  addTagsByTitle: function (newTagTitles) {
+    var owner = this.owner();
+    var allTagTitles = _.pluck(owner.tags().fetch(), 'title');
+    newTagTitles.forEach(function(newTagTitle) {
+      // if exists, add todoid
+      if(_.contains(allTagTitles, newTagTitle)) {
+        var tag = userTagByTitle(newTagTitle);
+        tag.addTodos(this._id);
+      } else { // else add tag
+        insertTag({
+          title: newTagTitle,
+          ownerId: this.ownerId,
+          todoIds: [ this._id ],
+          itemType: 'topic'
+        });
+      }
+    });
+  }
+
+});
 
 titleWithTags = function(todo) {
   // if _id provided, get object
@@ -73,11 +97,10 @@ function changeTodoIndices(amount) {
   // callback takes (err, id) as params
   return function(start, end) {
     var selector;
+    var callback;
 
-    if(!start || !end)
-      selector = {};
-    else
-      selector = { index: { $gte: start, $lte: end } };
+    else if(!start || !end) selector = {};
+    else selector = { index: { $gte: start, $lte: end } };
 
     Todos.update(selector, { $inc: { index: amount } }, { multi: true });
   };

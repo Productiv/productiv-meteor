@@ -12,7 +12,8 @@ reywood:bootstrap3-sass
 fourseven:scss
 accounts-password
 natestrauser:font-awesome
-rubaxa:sortable
 u2622:persistent-session
 stevezhu:lodash
 meteorhacks:fast-render
+dburles:collection-helpers
+rubaxa:sortable
