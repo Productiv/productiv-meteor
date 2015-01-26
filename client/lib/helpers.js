@@ -41,3 +41,27 @@ showUndo = function(message, action, undoAction) {
     undoAction();
   });
 };
+
+/* http://www.jquerybyexample.net/2012/06/get-url-parameters-using-jquery.html */
+function getUrlParameter(sParam) {
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++) {
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] == sParam) {
+      return sParameterName[1];
+    }
+  }
+};
+
+function toUrlParamString(obj) {
+  var str = "";
+  R.keys(obj).forEach(function(key) {
+    var val = obj[key];
+    str += "&";
+    str += key;
+    str += "=";
+    str += val;
+  });
+  return str.substring(1);
+};
