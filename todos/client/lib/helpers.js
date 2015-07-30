@@ -11,6 +11,12 @@ function removeTags(str) {
   return str.trim();
 };
 
+function tagIn(col) {
+  return function(tag) {
+    return _.contains(_.pluck(col, 'title'), tag.title);
+  };
+};
+
 parseTodoTitleTags = function(title, todo) {
   var ownerId = todo.ownerId || Meteor.userId();
   var todoId;
@@ -43,12 +49,6 @@ parseTodoTitleTags = function(title, todo) {
   }
 
   console.log('currentTags: ', currentTags)
-
-  function tagIn(col) {
-    return function(tag) {
-      return _.contains(_.pluck(col, 'title'), tag.title);
-    };
-  };
 
   if(currentTags) {
     // get all old tags
